@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <context:property-placeholder location="jdbc.properties"/>
+    <!--数据源依赖-->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="jdbcUrl" value="${jdbc.url}"/>
+        <property name="driverClass" value="${jdbc.driver}"/>
+        <property name="user" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+
+    <!--hibernate-->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configLocation" value="hibernate.cfg.xml"/>
+        <property name="mappingLocations" value="com/xu/entity/*.hbm.xml"/>
+    </bean>
+
+    <!--事务管理器-->
+    <bean id="tx" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <!--事务的属性-->
+    <tx:advice id="advice" transaction-manager="tx">
+        <tx:attributes>
+            <tx:method name="query*" read-only="true" isolation="DEFAULT" propagation="REQUIRED"/>
+            <tx:method name="add*" read-only="false" isolation="DEFAULT" propagation="REQUIRED"/>
+            <tx:method name="insert*" read-only="false" isolation="DEFAULT" propagation="REQUIRED"/>
+            <tx:method name="delete*" read-only="false" isolation="DEFAULT" propagation="REQUIRED"/>
+            <tx:method name="update*" read-only="false" isolation="DEFAULT" propagation="REQUIRED"/>
+            <tx:method name="modify*" read-only="false" isolation="DEFAULT" propagation="REQUIRED"/>
+        </tx:attributes>
+    </tx:advice>
+    <!--切面的配置-->
+    <aop:config proxy-target-class="true">
+        <aop:advisor advice-ref="advice" pointcut="execution(* com.xu.service.*.*(..))"/>
+    </aop:config>
+
+    <bean id="userService" class="com.xu.service.impl.UserServiceImpl">
+        <property name="userDao" ref="userDao"/>
+    </bean>
+
+    <bean id="userDao" class="com.xu.dao.impl.UserDaoImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="user" class="com.xu.entity.User">
+        <property name="id" value="1"/>
+        <property name="username" value="徐龙"/>
+        <property name="password" value="123"/>
+        <property name="sex" value="1"/>
+    </bean>
+
+</beans>

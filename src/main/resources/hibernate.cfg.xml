@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+
+	<session-factory>
+
+		<!-- 方言 -->
+		<property name="dialect">org.hibernate.dialect.MySQLDialect</property>
+
+		<!-- 把session和当前线程绑定 -->
+		<!--<property name="current_session_context_class">thread</property>-->
+
+		<!-- 是否显示sql -->
+		<property name="show_sql">true</property>
+		
+		<!-- 是否格式化SQL -->
+		<property name="format_sql">true</property>
+
+		<!-- 数据库定义语言 ，如果表存在就使用，不存在就创建-->
+		<property name="hbm2ddl.auto">update</property>
+	</session-factory>
+
+</hibernate-configuration>
